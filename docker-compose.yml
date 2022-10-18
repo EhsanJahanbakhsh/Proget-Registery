@@ -1,0 +1,77 @@
+version: '3.4'
+networks:
+  default:
+    driver: bridge
+services:
+  inedo-sql:
+    image: hub.company.com/mssql/server:2019-latest
+    restart: unless-stopped
+    user: root
+    volumes:
+       - ./mssql/data:/var/opt/mssql/data
+    environment:
+      - MSSQL_PID=Express
+      - MSSQL_SA_PASSWORD=Password1@3
+      - ACCEPT_EULA=Y 
+    ports:
+      - 1435:1433
+
+  inedo-sql-tools:  
+    image: mcr.microsoft.com/mssql-tools    
+    depends_on:
+      - inedo-sql
+    user: root
+    links:
+      - inedo-sql        
+    volumes:
+       - ./init-proget.sql:/opt/mssql-tools/bin/init-proget.sql
+       - ./init-proget.sh:/opt/mssql-tools/bin/init-proget.sh
+    environment:
+      - MSSQL_PID=inedo-sql
+      - MSSQL_SA_PASSWORD=Password1@3
+    command: /bin/sh -c "/opt/mssql-tools/bin/init-proget.sh"
+
+  inedo:
+    image: hub.company.com/productimages/inedo/proget:latest
+    restart: unless-stopped   
+    user: root
+    depends_on:
+      - inedo-sql
+      - inedo-sql-tools
+    links:
+      - inedo-sql     
+      - inedo-sql-tools
+    volumes:
+       - ./proget/packages:/var/proget/packages  
+    environment:
+      - SQL_CONNECTION_STRING=Data Source=inedo-sql; Initial Catalog=ProGet; User ID=sa; Password=Password1@3
+      - http_proxy=192.168.1.10:1080
+      - https_proxy=192.168.1.10:1080
+      - proxy=192.168.1.10:1080
+    ports:
+      - "8080:80"
+    
+
+  # buildmaster:
+  #   image: hub.company.com/productimages/inedo/buildmaster:latest
+  #   restart: unless-stopped    
+  #   depends_on:
+  #     - inedo-sql
+  #     - inedo-sql-tools
+  #   volumes:
+  #     - ./buildmaster/artifacts:/var/buildmaster/artifacts
+  #   environment:
+  #     - BUILDMASTER_SQL_CONNECTION_STRING="Data Source=inedo-sql; Initial Catalog=BuildMaster; User ID=sa; Password=Password1@3"
+  #   ports:
+  #     - "8081:80"
+
+  # otter:
+  #   image: hub.company.com/productimages/inedo/otter:latest
+  #   restart: unless-stopped   
+  #   depends_on:
+  #     - inedo-sql
+  #     - inedo-sql-tools     
+  #   environment:
+  #     - OTTER_SQL_CONNECTION_STRING="Data Source=inedo-sql; Initial Catalog=Otter; User ID=sa; Password=Password1@3"
+  #   ports:
+  #     - "8082:80"
