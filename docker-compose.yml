@@ -45,9 +45,9 @@ services:
        - ./proget/packages:/var/proget/packages  
     environment:
       - SQL_CONNECTION_STRING=Data Source=inedo-sql; Initial Catalog=ProGet; User ID=sa; Password=Password1@3
-      - http_proxy=192.168.1.10:1080
-      - https_proxy=192.168.1.10:1080
-      - proxy=192.168.1.10:1080
+      #- http_proxy=192.168.1.10:1080
+      #- https_proxy=192.168.1.10:1080
+      #- proxy=192.168.1.10:1080
     ports:
       - "8080:80"
     
