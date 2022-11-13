@@ -2,9 +2,9 @@
 
 echo "Installing dependencies..."
 
-export http_proxy="http://185.14.163.107:1080"
-export https_proxy="http://185.14.163.107:1080"
-export proxy="http://185.14.163.107:1080"
+#export http_proxy="http://0.0.0.0:1080"
+#export https_proxy="http://0.0.0.0:1080"
+#export proxy="http://0.0.0.0:1080"
 apt-get update && apt-get install -y netcat && apt-get install -y curl && apt-get install -y iputils-ping 
 
 echo "Waiting for MSSQL to start listening..."
