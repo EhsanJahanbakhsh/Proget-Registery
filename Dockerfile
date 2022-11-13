@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/mssql-tools as tools
 
-ENV http_proxy="http://192.168.1.10:1080"
-ENV https_proxy="http://192.168.1.10:1080"
+#ENV http_proxy="http://192.168.1.10:1080"
+#ENV https_proxy="http://192.168.1.10:1080"
 
 RUN apt-get update && apt-get install -y netcat && apt-get install -y curl && apt-get install -y iputils-ping 
 
